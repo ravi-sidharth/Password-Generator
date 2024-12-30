@@ -7,7 +7,9 @@ const staticRoute = require('./routers/staticRouter')
 const {router} = require('./routers/user')
 
 const cookieParser = require('cookie-parser')
-const {restrictToLogggedInUserOnly,checkAuth} = require('./middlewares/auth')
+const {restrictToLogggedInUserOnly,checkAuth,checkForAuthentication,restrictTo} = require('./middlewares/auth')
+const path = require('path')
+
 
 const app = express()
 const PORT = 8001
@@ -21,15 +23,18 @@ connectMongoDb('mongodb://localhost:27017/short-url')
 app.use(express.json())
 app.use(express.urlencoded({extended:false}))
 app.use(cookieParser())
+app.use(checkForAuthentication)
 
 app.set('view engine','ejs')
 app.set('views',path.resolve('./views'))
 
 // request on url route
-app.use('/url',restrictToLogggedInUserOnly, urlRoute)
+// app.use('/url',restrictToLogggedInUserOnly, urlRoute)
+app.use('/url',restrictTo(["Normal","Admin"]), urlRoute)
 
 //request on static route
-app.use('/',checkAuth, staticRoute)
+// app.use('/',checkAuth, staticRoute)
+app.use('/', staticRoute)
 
 // request on user route
 app.use('/user',router)
