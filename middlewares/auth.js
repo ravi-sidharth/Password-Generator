@@ -25,7 +25,7 @@ function checkForAuthentication(req, res, next) {
 
 function restrictTo(roles = []) {
     return function (req, res, next) {
-        if (!req.user) return res.redirect('/login')
+        if (!req.user) return res.redirect('/signup')
 
         if (!roles.includes(req.user.role)) return res.end("Unauthorized")
 
