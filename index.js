@@ -17,7 +17,7 @@ const PORT = process.env.PORT || 10000
 
 //Connect Database
 connectMongoDb(process.env.Mongo_URL)
-    .then(() => console.log("MongoDB Connected!"), { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => console.log("MongoDB Connected!"))
     .catch((err) => console.log("Error:", err))
 
 // middleware 
@@ -25,7 +25,6 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(checkForAuthentication)
-app.set('trust proxy', true);
 
 app.set('view engine', 'ejs')
 app.set('views', path.resolve('./views'))
