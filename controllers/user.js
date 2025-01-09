@@ -3,7 +3,6 @@ const {setUser} = require('../service/auth')
 
 async function handleUserSignUp(req,res){
     const {name,email,password}=req.body
-    console.log(name,email,password)
     await User.create({
         name,
         email,
@@ -20,7 +19,6 @@ async function handleUserLogin(req,res){
     })
 
     const token = setUser(user)
-    console.log("token",token)
 
     res.cookie('token',token)
     return res.redirect('/')
