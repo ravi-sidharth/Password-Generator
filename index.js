@@ -1,5 +1,7 @@
+require('dotenv').config()
+
 const express = require('express')
-const { connectMongoDb } = require('./connection')
+const { connectMongoDb } = require('./DB/connection')
 const { URL } = require('./models/url')
 
 const urlRoute = require('./routers/url')
@@ -7,15 +9,14 @@ const staticRoute = require('./routers/staticRouter')
 const {router} = require('./routers/user')
 
 const cookieParser = require('cookie-parser')
-const {restrictToLogggedInUserOnly,checkAuth,checkForAuthentication,restrictTo} = require('./middlewares/auth')
+const {checkForAuthentication,restrictTo} = require('./middlewares/auth')
 const path = require('path')
 
-
 const app = express()
-const PORT = 8001
+const PORT = process.env.PORT || 8000
 
-// Connection
-connectMongoDb('mongodb://localhost:27017/short-url')
+//Connect Database
+connectMongoDb(process.env.Mongo_URL)
     .then(() => console.log("MongoDB Connected!"))
     .catch((err) => console.log("Error:", err))
 
@@ -28,18 +29,12 @@ app.use(checkForAuthentication)
 app.set('view engine','ejs')
 app.set('views',path.resolve('./views'))
 
-// request on url route
-// app.use('/url',restrictToLogggedInUserOnly, urlRoute)
 app.use('/url',restrictTo(["Normal","Admin"]), urlRoute)
 
-//request on static route
-// app.use('/',checkAuth, staticRoute)
 app.use('/', staticRoute)
 
-// request on user route
 app.use('/user',router)
 
-// request for redirect url and update visitHistory
 app.use('/url/:shortId', async (req, res) => {
     const shortId = req.params.shortId
 
